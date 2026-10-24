@@ -8,4 +8,5 @@ async function bootstrap() {
   setupApp(app);
   await app.listen(app.get(LineLoginConfig).port);
 }
+
 await bootstrap();

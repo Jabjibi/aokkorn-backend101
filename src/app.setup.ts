@@ -1,4 +1,4 @@
-import type { INestApplication } from '@nestjs/common';
+import { RequestMethod, type INestApplication } from '@nestjs/common';
 import type { Request, Response, NextFunction } from 'express';
 import { randomUUID } from 'node:crypto';
 import { LineLoginConfig } from './api/line-login/line-login.config.js';
@@ -7,11 +7,13 @@ import { ApiErrorFilter } from './common/api-error.filter.js';
 /** ใช้ setup เดียวกันตอนรันจริงและ HTTP tests */
 export function setupApp(app: INestApplication): void {
   const config = app.get(LineLoginConfig);
-  app.setGlobalPrefix('api/v1');
+  app.setGlobalPrefix('api/v1', {
+    exclude: [{ path: 'health', method: RequestMethod.GET }],
+  });
   app.enableCors({
     origin: config.origins,
     credentials: true,
-    methods: ['GET', 'POST'],
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'X-CSRF-Token'],
   });
   app.use((_request: Request, response: Response, next: NextFunction) => {

@@ -6,8 +6,8 @@ import {
   ApiError,
   ApiErrorFilter,
   ERRORS,
-} from '../src/common/api-error.filter.js';
-import { LineLoginConfig } from '../src/api/line-login/line-login.config.js';
+} from '../../src/common/api-error.filter.js';
+import { LineLoginConfig } from '../../src/api/line-login/line-login.config.js';
 
 const failureUrl = 'http://localhost:3000/?login=failed';
 function fixture(
@@ -67,6 +67,24 @@ describe('browser OAuth errors กลับ frontend โดยไม่เปิ
       );
     },
   );
+  it('Trip errors retain JSON status, stable code and safe quota details', () => {
+    const f = fixture('/api/v1/trips', failureUrl, 'POST');
+    f.filter.catch(
+      new ApiError(ERRORS.TRIP_LIMIT_EXCEEDED, 'โควตาเต็ม', {
+        activeTripCount: 5,
+        limit: 5,
+      }),
+      f.host,
+    );
+    expect(f.response.redirect).not.toHaveBeenCalled();
+    expect(f.response.status).toHaveBeenCalledWith(409);
+    expect(f.response.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        errorCode: 'AOK-2101',
+        details: { activeTripCount: 5, limit: 5 },
+      }),
+    );
+  });
   it('API แบบไม่ตั้ง failure URL ยังคงส่ง JSON เดิม', () => {
     const f = fixture('/api/v1/auth/line/callback', '');
     f.filter.catch(

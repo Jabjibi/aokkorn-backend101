@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { DatabaseModule } from '../../database/database.module.js';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { LineLoginController } from './line-login.controller.js';
 import { LineLoginService } from './line-login.service.js';
@@ -10,7 +11,10 @@ import { SessionGuard } from './session.guard.js';
 
 /** ประกอบ feature นี้จุดเดียว; ใช้ concrete classes เพื่อให้ตามโค้ดได้ตรง ๆ */
 @Module({
-  imports: [ThrottlerModule.forRoot([{ ttl: 60_000, limit: 20 }])],
+  imports: [
+    DatabaseModule,
+    ThrottlerModule.forRoot([{ ttl: 60_000, limit: 20 }]),
+  ],
   controllers: [LineLoginController],
   providers: [
     LineLoginService,

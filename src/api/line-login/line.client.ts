@@ -7,6 +7,7 @@ export interface LineIdentity {
   subject: string;
   displayName: string;
 }
+
 export const LINE_FETCH = Symbol('LINE_FETCH');
 
 /** เรียก LINE เท่านั้น: ไม่มี SQL และไม่คืน access/ID token ให้ frontend */

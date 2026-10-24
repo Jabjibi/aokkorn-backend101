@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { ConfigService } from '@nestjs/config';
-import { LineLoginConfig } from '../src/api/line-login/line-login.config.js';
+import { DatabaseService } from '../../src/database/database.service.js';
 
 const pg = vi.hoisted(() => ({
   query: vi.fn(),
@@ -20,10 +20,10 @@ vi.mock('pg', () => ({
     end = pg.end;
   },
 }));
-import { LineLoginRepository } from '../src/api/line-login/line-login.repository.js';
+import { LineLoginRepository } from '../../src/api/line-login/line-login.repository.js';
 
 const config = (extra = {}) =>
-  new LineLoginConfig(
+  new DatabaseService(
     new ConfigService({
       NODE_ENV: 'test',
       LINE_LOGIN_ENABLED: 'true',
@@ -49,7 +49,9 @@ describe('LINE Login repository transactions (no live database)', () => {
       'hash-only',
       expiresAt,
     );
-    expect(pg.query.mock.calls[0]![0]).toBe('BEGIN');
+    expect(pg.query.mock.calls[0]![0]).toBe(
+      'BEGIN ISOLATION LEVEL READ COMMITTED',
+    );
     expect(pg.query.mock.calls[1]![1]).toEqual(['line-subject', 'ชื่อ']);
     expect(pg.query.mock.calls[2]![1]).toEqual([
       'user-1',
@@ -110,8 +112,19 @@ describe('LINE Login repository transactions (no live database)', () => {
         ),
     ).toThrow();
   });
-  it('opens no pool while login is disabled', () => {
-    new LineLoginRepository(config({ LINE_LOGIN_ENABLED: 'false' }));
+  it('shares database access independently of login enablement', () => {
+    const database = config({ LINE_LOGIN_ENABLED: 'false' });
+    new LineLoginRepository(database);
+    new LineLoginRepository(database);
+    expect(pg.options).toHaveBeenCalledTimes(1);
+  });
+  it('rejects malformed database URL without exposing its value', () => {
+    expect(() => config({ DATABASE_URL: 'private-invalid-value' })).toThrow(
+      'ตั้งค่า DATABASE_URL ไม่ถูกต้อง',
+    );
+  });
+  it('opens no pool without DATABASE_URL', () => {
+    config({ DATABASE_URL: '' });
     expect(pg.options).not.toHaveBeenCalled();
   });
 });

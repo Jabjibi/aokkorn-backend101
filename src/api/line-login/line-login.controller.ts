@@ -25,6 +25,11 @@ export class LineLoginController {
     @Inject(LineLoginConfig) private readonly config: LineLoginConfig,
   ) {}
 
+  /**
+   * GET /api/v1/auth/line/start
+   * รับ: เปิดผ่าน browser navigation
+   * คืน: 302 ไปหน้า LINE Login
+   */
   @Get('line/start')
   @UseGuards(ThrottlerGuard)
   start(@Res() response: Response) {
@@ -33,6 +38,11 @@ export class LineLoginController {
     response.redirect(302, result.authorizationUrl);
   }
 
+  /**
+   * GET /api/v1/auth/line/callback
+   * รับ: code/state หรือ error จาก LINE และ flow cookie
+   * คืน: session cookie และ 303 กลับ frontend
+   */
   @Get('line/callback')
   @UseGuards(ThrottlerGuard)
   async callback(
@@ -53,12 +63,22 @@ export class LineLoginController {
     response.redirect(303, this.config.successUrl);
   }
 
+  /**
+   * GET /api/v1/auth/me
+   * รับ: session cookie
+   * คืน: user, expiresAt และ csrfToken
+   */
   @Get('me')
   @UseGuards(SessionGuard)
   me(@Req() request: AuthenticatedRequest) {
     return request.auth;
   }
 
+  /**
+   * POST /api/v1/auth/logout
+   * รับ: session cookie, Origin, X-CSRF-Token
+   * คืน: 204 และล้าง session cookie
+   */
   @Post('logout')
   @UseGuards(SessionGuard)
   @HttpCode(204)

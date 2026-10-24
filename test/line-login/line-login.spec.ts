@@ -1,9 +1,9 @@
 import 'reflect-metadata';
 import { ConfigService } from '@nestjs/config';
 import { createHash } from 'node:crypto';
-import { LineLoginConfig } from '../src/api/line-login/line-login.config.js';
-import { LineClient } from '../src/api/line-login/line.client.js';
-import { LineLoginCookies } from '../src/api/line-login/line-login.cookies.js';
+import { LineLoginConfig } from '../../src/api/line-login/line-login.config.js';
+import { LineClient } from '../../src/api/line-login/line.client.js';
+import { LineLoginCookies } from '../../src/api/line-login/line-login.cookies.js';
 import type { Response as ExpressResponse } from 'express';
 
 const config = (extra = {}) =>

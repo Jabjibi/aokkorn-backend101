@@ -10,19 +10,19 @@ import {
 } from '@nestjs/common';
 import request from 'supertest';
 import { createHash, randomBytes } from 'node:crypto';
-import { AppModule } from '../src/app.module.js';
-import { setupApp } from '../src/app.setup.js';
-import { LineLoginConfig } from '../src/api/line-login/line-login.config.js';
-import { LineLoginModule } from '../src/api/line-login/line-login.module.js';
-import { SessionGuard } from '../src/api/line-login/session.guard.js';
+import { AppModule } from '../../src/app.module.js';
+import { setupApp } from '../../src/app.setup.js';
+import { LineLoginConfig } from '../../src/api/line-login/line-login.config.js';
+import { LineLoginModule } from '../../src/api/line-login/line-login.module.js';
+import { SessionGuard } from '../../src/api/line-login/session.guard.js';
 import {
   LINE_FETCH,
   type LineIdentity,
-} from '../src/api/line-login/line.client.js';
+} from '../../src/api/line-login/line.client.js';
 import {
   LineLoginRepository,
   type StoredSession,
-} from '../src/api/line-login/line-login.repository.js';
+} from '../../src/api/line-login/line-login.repository.js';
 
 const origin = 'http://localhost:3000';
 const config = () =>

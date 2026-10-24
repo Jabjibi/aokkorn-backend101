@@ -16,13 +16,17 @@ interface LoginFlow {
   browserHash: string;
   expiresAt: number;
 }
+
 const randomToken = () => randomBytes(32).toString('hex');
+
 const hash = (token: string) =>
   createHash('sha256').update(token).digest('hex');
+
 const validToken = (value: unknown): value is string =>
   typeof value === 'string' &&
   value.length === 64 &&
   /^[a-f0-9]{64}$/.test(value);
+
 const equalTokens = (left: string, right: string) =>
   validToken(left) &&
   validToken(right) &&
@@ -148,12 +152,14 @@ export class LineLoginService {
   private csrfToken(token: string): string {
     return createHmac('sha256', token).update('aokkorn-csrf-v1').digest('hex');
   }
+
   private invalidCallback(): never {
     throw new ApiError(
       ERRORS.LINE_CALLBACK_INVALID,
       'คำขอเข้าสู่ระบบไม่ถูกต้อง ถูกยกเลิก หรือหมดอายุ กรุณาเริ่มใหม่',
     );
   }
+
   private requireEnabled(): void {
     if (!this.config.enabled)
       throw new ApiError(

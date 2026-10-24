@@ -27,15 +27,18 @@ export class LineLoginCookies {
       maxAge: this.config.flowTtlMs,
     });
   }
+
   clearFlow(response: Response) {
     response.clearCookie(this.name('flow'), this.options('flow'));
   }
+
   writeSession(response: Response, token: string, expires: Date) {
     response.cookie(this.name('session'), token, {
       ...this.options('session'),
       expires,
     });
   }
+
   clearSession(response: Response) {
     response.clearCookie(this.name('session'), this.options('session'));
   }
@@ -43,6 +46,7 @@ export class LineLoginCookies {
   private name(kind: 'flow' | 'session') {
     return `${this.config.production ? '__Host-' : ''}aokkorn_${kind}`;
   }
+
   private options(kind: 'flow' | 'session'): CookieOptions {
     return {
       httpOnly: true,
